@@ -48,11 +48,21 @@ class BingoCard:
 
     def create_bingo_card(self):
         """Generate a Bingo card and return it as a DataFrame."""
-        numbers = list(range(1, self.card_size**2 + 1))
-        random.shuffle(numbers)
-        card = [numbers[i:i+self.card_size] for i in range(0, len(numbers), self.card_size)]
-        card[int(self.card_size/2)][int(self.card_size/2)] = "FREE"  # Middle space is FREE
-        return pd.DataFrame(card, columns=list('BINGO'))
+        card = []
+        for i in range(self.card_size):
+            # Generate numbers for each column with the correct range
+            start = 1 + i * 15
+            end = start + 15
+            column_numbers = random.sample(range(start, end), self.card_size)
+            card.append(column_numbers)
+        
+        # Convert card list into DataFrame and transpose to get correct orientation
+        card_df = pd.DataFrame(card).transpose()
+        card_df = card_df.sample(frac=1, axis=1).reset_index(drop=True)
+        card_df = card_df.astype(str)
+        card_df.columns = list('BINGO')
+        card_df.iloc[int(self.card_size/2), int(self.card_size/2)] = "FREE"  # Middle space is FREE
+        return card_df
 
     def generate_and_save_cards(self, num_cards):
         """Generate multiple Bingo cards and return them as a PDF."""
@@ -67,3 +77,10 @@ class BingoCard:
                 plt.close(fig)
         buffer.seek(0)
         return buffer
+
+
+if __name__ == "__main__":
+    gen = BingoCard()
+    card = gen.create_bingo_card()
+
+    print(card)
