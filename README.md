@@ -12,3 +12,7 @@ streamlit run main.py
 ## Demo
 
 ![demo](assets/demo.gif)
+
+## Link
+
+[Where to start ->](https://mi-bingo.streamlit.app/)
