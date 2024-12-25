@@ -3,15 +3,18 @@ import streamlit as st
 from src.bingo import Bingo, BingoCard
 from src.utils import load_base64_video
 
+
 def main():
     base64_video = load_base64_video()
 
     with st.sidebar:
+        # Reset button to restart the game
         if st.button("Reset"):
-            game = Bingo(seed=None)
-            game.reset_game()
+            st.session_state.game = Bingo(seed=None)  # Reset and store in session state
+            st.session_state.game.reset_game()
             st.success("Game has been reset!")
 
+        # Interface for generating bingo cards
         st.header("Bingo Card Generator")
         num_cards = st.number_input(
             "Enter the number of participants", min_value=1, value=1, step=1
@@ -26,7 +29,8 @@ def main():
                 mime="application/pdf"
             )
 
-        blur_intensity = st.slider("Adjust Background Blur", 0, 20, 5)  # min, max, default values
+        # Slider to adjust the background blur of the video
+        blur_intensity = st.slider("Adjust Background Blur", 0, 20, 5)
 
     # Custom CSS to style the sidebar and other elements
     st.markdown(f"""
@@ -82,13 +86,16 @@ def main():
         </div>
         """, unsafe_allow_html=True)
 
+    # Load or initialize the game instance
+    if 'game' not in st.session_state:
+        st.session_state.game = Bingo()
+
+    # Drawing number and displaying results
     st.title("Bingo Game")
-    game = Bingo()
     if st.button("Draw Number"):
-        game.draw_number()
-    game.show_used_numbers()
+        st.session_state.game.draw_number()
+    st.session_state.game.show_used_numbers()
 
 
 if __name__ == "__main__":
     main()
-
